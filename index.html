@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GrimorioTech - Curso Mágico</title>
+  <style>
+    :root {
+      --primary: #4effb6;
+      --background: #121212;
+      --card: rgba(255, 255, 255, 0.05);
+      --glass: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.2);
+      --text: #f0f0f0;
+      --accent: #15f5c0;
+      --magic-gradient: linear-gradient(45deg, #4effb6 0%, #15f5c0 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      z-index: 999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      color: var(--primary);
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(78, 255, 182, 0.4);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a,
+    .dropdown-btn {
+      color: var(--text);
+      text-decoration: none;
+      position: relative;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      padding: 0.5rem 0;
+    }
+
+    .nav-links a:hover,
+    .dropdown-btn:hover {
+      color: var(--accent);
+      text-shadow: 0 0 10px rgba(21, 245, 192, 0.3);
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: var(--glass);
+      min-width: 200px;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      backdrop-filter: blur(15px);
+      z-index: 1;
+      top: 100%;
+      left: 0;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .dropdown-content a {
+      display: block;
+      padding: 0.8rem 1.2rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+
+    .dropdown-content a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding-left: 1.5rem;
+    }
+
+    section {
+      padding: 8rem 2rem;
+      scroll-margin-top: 80px;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: var(--magic-gradient);
+      margin: 0.5rem auto;
+      border-radius: 2px;
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                  url('https://source.unsplash.com/1920x1080/?space,magic,technology') no-repeat center center/cover;
+      color: white;
+    }
+
+    .hero-content {
+      background: var(--glass);
+      padding: 3rem;
+      border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      max-width: 800px;
+      margin: 0 1rem;
+      box-shadow: 0 0 40px rgba(0,0,0,0.3);
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--magic-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      background: var(--magic-gradient);
+      color: black;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 50px;
+      margin-top: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(78, 255, 182, 0.3);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: var(--magic-gradient);
+      opacity: 0.1;
+      transform: rotate(45deg);
+      transition: all 0.5s ease;
+    }
+
+    .feature-card:hover::before {
+      transform: rotate(45deg) translateY(50%);
+    }
+
+    .diapo-container {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      margin: 3rem 0;
+    }
+
+    .flip-card {
+      width: 300px;
+      height: 400px;
+      perspective: 1000px;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    .flip-card-front {
+      background: var(--card);
+      border: 1px solid var(--border);
+    }
+
+    .flip-card-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .flip-card-back {
+      background: var(--glass);
+      transform: rotateY(180deg);
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid var(--primary);
+    }
+
+    .diapo-text {
+      flex: 1;
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    footer {
+      text-align: center;
+      padding: 4rem 1rem;
+      border-top: 1px solid var(--border);
+      background: var(--glass);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        gap: 1rem;
+        font-size: 0.9rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .diapo-container {
+        flex-direction: column;
+      }
+      
+      .flip-card {
+        width: 100%;
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="logo">GrimorioTech</div>
+    <nav class="nav-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#servicios">Conjuros</a>
+
+      <div class="dropdown">
+        <button class="dropdown-btn">Resumen</button>
+        <div class="dropdown-content">
+          <a href="#introduccion">Introducción al Curso</a>
+          <a href="#mapas">Mapas Conceptuales</a>
+          <a href="#tareas">Tareas</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button class="dropdown-btn">Diapositivas</button>
+        <div class="dropdown-content">
+          <a href="#diapositiva1">Diapositiva 1</a>
+          <a href="#diapositiva2">Diapositiva 2</a>
+          <a href="#diapositiva3">Diapositiva 3</a>
+        </div>
+      </div>
+
+      <a href="#contacto">Invocar</a>
+    </nav>
+  </header>
+
+  <section class="hero" id="inicio">
+    <div class="hero-content">
+      <h1>Bienvenido al Grimorio Digital</h1>
+      <p>Domina los secretos de la tecnología arcana y da vida a tus creaciones digitales</p>
+      <a href="#introduccion" class="cta-button">🌟 Comenzar el Ritual</a>
+    </div>
+  </section>
+
+  <section id="servicios">
+    <h2 class="section-title">Conjuros Digitales</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <img src="https://img.icons8.com/ios-filled/100/4effb6/source-code.png" alt="Desarrollo Web"/>
+        <h3>Páginas Encantadas</h3>
+        <p>Portales dimensionales responsive creados con las últimas tecnologías místicas</p>
+      </div>
+      <div class="feature-card">
+        <img src="https://img.icons8.com/ios-filled/100/4effb6/magic-book.png" alt="Apps Móviles"/>
+        <h3>Aplicaciones Arcanas</h3>
+        <p>Invocación de apps nativas e híbridas con poderosos hechizos funcionales</p>
+      </div>
+      <div class="feature-card">
+        <img src="https://img.icons8.com/ios-filled/100/4effb6/cloud.png" alt="Cloud"/>
+        <h3>Nube Etérea</h3>
+        <p>Almacenamiento en dimensiones paralelas con escalamiento automático</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="introduccion">
+    <div class="content-card">
+      <h2 class="section-title">Introducción al Curso</h2>
+      <p>Sumérgete en un viaje interdimensional donde la tecnología y la magia se fusionan para crear poderosos artefactos digitales.</p>
+    </div>
+  </section>
+
+  <section id="mapas">
+    <div class="content-card">
+      <h2 class="section-title">Mapas Conceptuales</h2>
+      <p>Explora las conexiones místicas entre diferentes conceptos a través de nuestros mapas de conocimiento interactivos.</p>
+    </div>
+  </section>
+
+  <section id="tareas">
+    <div class="content-card">
+      <h2 class="section-title">Tareas Místicas</h2>
+      <p>Demuestra tu dominio de los conjuros digitales completando estos desafíos arcano-tecnológicos.</p>
+    </div>
+  </section>
+
+  <section id="diapositiva1">
+    <h2 class="section-title">Diapositiva 1: Fundamentos Arcanos</h2>
+    <div class="diapo-container">
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <img src="https://source.unsplash.com/random/600x800/?tech,code" alt="Fundamentos">
+          </div>
+          <div class="flip-card-back">
+            <h3>Principios Esenciales</h3>
+            <p>Domina las bases de la energía digital y su manipulación cuántica</p>
+          </div>
+        </div>
+      </div>
+      <div class="diapo-text">
+        <h3>Introducción a la Tecnomagia</h3>
+        <p>Descubre los fundamentos que conectan el mundo digital con las fuerzas arcanas ancestrales. Aprende a canalizar la energía a través de interfaces místicas y componentes electrónicos.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="diapositiva2">
+    <h2 class="section-title">Diapositiva 2: Componentes Mágicos</h2>
+    <div class="diapo-container">
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <img src="https://source.unsplash.com/random/600x800/?circuit,tech" alt="Componentes">
+          </div>
+          <div class="flip-card-back">
+            <h3>Elementos Clave</h3>
+            <p>HTML5, CSS3 y JavaScript: Los pilares de la creación digital</p>
+          </div>
+        </div>
+      </div>
+      <div class="diapo-text">
+        <h3>Arquitectura Arcana</h3>
+        <p>Desentraña los misterios de los lenguajes sagrados de la web. Domina la alquimia de estilos y la invocación de funciones místicas para crear hechizos interactivos.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="diapositiva3">
+    <h2 class="section-title">Diapositiva 3: Flujos de Energía</h2>
+    <div class="diapo-container">
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <img src="https://source.unsplash.com/random/600x800/?data,network" alt="Flujos">
+          </div>
+          <div class="flip-card-back">
+            <h3>Circulación Cuántica</h3>
+            <p>Controla el flujo de datos a través de algoritmos místicos</p>
+          </div>
+        </div>
+      </div>
+      <div class="diapo-text">
+        <h3>Dinámica Energética</h3>
+        <p>Aprende a manipular los flujos de información cuántica mediante arquitecturas limpias y patrones de diseño ancestrales. Domina el arte de la optimización energética.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contacto">
+    <div class="content-card">
+      <h3>Conecta con el Consejo Arcano</h3>
+      <p>📧 Email: oraculo@grimoriotech.com</p>
+      <p>🔮 Teléfono: +1 234 567 890</p>
+      <p>© 2025 GrimorioTech - Protegido por sellos de protección digital</p>
+    </div>
+  </footer>
+
+</body>
+</html>
