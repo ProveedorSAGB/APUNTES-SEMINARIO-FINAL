@@ -1,546 +1,1161 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GrimorioTech - Curso Mágico</title>
-  <style>
-    :root {
-      --primary: #4effb6;
-      --background: #121212;
-      --glass: rgba(255, 255, 255, 0.07);
-      --border: rgba(255, 255, 255, 0.2);
-      --text: #f0f0f0;
-      --accent: #15f5c0;
-      --magic-gradient: linear-gradient(45deg, #4effb6 0%, #15f5c0 100%);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financiero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4effb6;
+            --background: #121212;
+            --glass: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.2);
+            --text: #f0f0f0;
+            --accent: #15f5c0;
+            --gradient: linear-gradient(45deg, #4effb6 0%, #15f5c0 100%);
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-      font-family: 'Segoe UI', sans-serif;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-    body {
-      background-color: var(--background);
-      color: var(--text);
-      line-height: 1.6;
-      position: relative;
-      overflow-x: hidden;
-    }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text);
+            overflow-x: hidden;
+        }
 
-    #matrix {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-      pointer-events: none;
-    }
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.5;
+        }
 
-    .header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      padding: 1rem 2rem;
-      border-bottom: 1px solid var(--border);
-      z-index: 999;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
 
-    .logo {
-      font-size: 1.5rem;
-      color: var(--primary);
-      font-weight: bold;
-      text-shadow: 0 0 15px rgba(78, 255, 182, 0.4);
-    }
+        .neon-text {
+            text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary);
+        }
 
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-    .nav-links a,
-    .dropdown-btn {
-      color: var(--text);
-      text-decoration: none;
-      position: relative;
-      cursor: pointer;
-      background: none;
-      border: none;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      padding: 0.5rem 0;
-    }
-    .nav-links a:hover,
-    .dropdown-btn:hover {
-      color: var(--accent);
-      text-shadow: 0 0 10px rgba(21, 245, 192, 0.3);
-    }
+        .tab-button {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .dropdown {
-      position: relative;
-    }
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      background-color: var(--glass);
-      min-width: 200px;
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      backdrop-filter: blur(15px);
-      z-index: 1;
-      top: 100%;
-      left: 0;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s ease;
-    }
-    .dropdown:hover .dropdown-content {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .dropdown-content a {
-      display: block;
-      padding: 0.8rem 1.2rem;
-      text-decoration: none;
-      color: var(--text);
-      transition: all 0.2s ease;
-    }
-    .dropdown-content a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding-left: 1.5rem;
-    }
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
 
-    section {
-      padding: 8rem 2rem 4rem;
-      scroll-margin-top: 80px;
-      position: relative;
-    }
+        .tab-button.active::after {
+            width: 100%;
+        }
 
-    .section-title {
-      font-size: clamp(1.8rem, 5vw, 2.5rem);
-      text-align: center;
-      margin: 0 auto 3rem;
-      padding: 1rem 2rem;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      backdrop-filter: blur(10px);
-      display: block;
-      width: 100%;
-      max-width: 1200px;
-      word-break: break-word;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    }
-    .section-title::after {
-      content: '';
-      display: block;
-      width: 60px;
-      height: 3px;
-      background: var(--magic-gradient);
-      margin: 0.5rem auto;
-      border-radius: 2px;
-    }
 
-    .content-card,
-    .diapo-text,
-    .hero-content,
-    .flip-card-back,
-    .feature-card {
-      background: var(--glass);
-      padding: 2rem;
-      border-radius: 1rem;
-      border: 1px solid var(--border);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-      margin: 0 auto;
-      max-width: 1200px;
-    }
 
-    .hero {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-      overflow: hidden;
-    }
-    .hero-content {
-      position: relative;
-      padding: 3rem;
-      width: 100%;
-      margin: 0 auto;
-      z-index: 1;
-    }
-    .hero h1 {
-      font-size: clamp(2.5rem, 8vw, 3.5rem);
-      margin-bottom: 1.5rem;
-      background: var(--magic-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.2;
-      text-align: center;
-    }
+        /* Formato para Diapositivas que giran */
+        .flip-card {
+            perspective: 1000px;
+        }
 
-    .cta-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 1rem 2rem;
-      background: var(--magic-gradient);
-      color: black;
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 50px;
-      margin: 1.5rem auto 0;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .cta-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 20px rgba(78, 255, 182, 0.3);
-    }
+        .flip-card-inner {
+              position: relative;
+              width: 100%;
+              height: 100%;
+              transition: transform 0.6s;
+              transform-style: preserve-3d;
+            }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .feature-card {
-      padding: 2rem;
-      border-radius: 1rem;
-      border: 1px solid var(--border);
-      text-align: center;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .feature-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
+        .flip-card-front,
+        .flip-card-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          backface-visibility: hidden;
+          border-radius: inherit;
+        }
+        /* La cara trasera se rota 180º para que se oculte inicialmente */
+        .flip-card-back {
+          transform: rotateY(180deg);
+        }
 
-    .diapo-container {
-      display: flex;
-      gap: 2rem;
-      align-items: center;
-      margin: 3rem auto;
-      max-width: 1200px;
-    }
-    .flip-card {
-      width: 100%;
-      max-width: 400px;
-      height: 500px;
-      perspective: 1000px;
-      flex-shrink: 0;
-    }
-    .flip-card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.6s;
-      transform-style: preserve-3d;
-    }
-    .flip-card:hover .flip-card-inner {
-      transform: rotateY(180deg);
-    }
-    .flip-card-front,
-    .flip-card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 1rem;
-      overflow: hidden;
-    }
-    .flip-card-front {
-      background: var(--glass);
-      border: 1px solid var(--border);
-    }
-    .flip-card-front img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .flip-card-back {
-      transform: rotateY(180deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
+        .footer-link {
+            color: var(--text);
+            transition: color 0.3s ease;
+          }
+          .footer-link:hover {
+            color: var(--primary);
+          }
 
-    .diapo-text {
-      flex-grow: 1;
-      min-width: 300px;
-    }
 
-    footer {
-      text-align: center;
-      padding: 4rem 1rem;
-      border-top: 1px solid var(--border);
-      background: var(--glass);
-      max-width: 100%;
-    }
 
-    @media (max-width: 768px) {
-      section {
-        padding: 6rem 1rem 2rem;
-      }
-      
-      .nav-links {
-        gap: 1rem;
-        font-size: 0.9rem;
-      }
-      
-      .hero-content {
-        padding: 2rem;
-      }
-      
-      .features-grid {
-        grid-template-columns: 1fr;
-        padding: 0 1rem;
-      }
-      
-      .diapo-container {
-        flex-direction: column;
-        gap: 2rem;
-        padding: 0 1rem;
-      }
-      
-      .flip-card {
-        height: 400px;
-        max-width: 100%;
-      }
-      
-      .section-title {
-        font-size: 1.8rem;
-        padding: 1rem;
-        margin: 0 auto 2rem;
-      }
-      
-      .diapo-text {
-        min-width: 100%;
-      }
-      
-      .content-card,
-      .diapo-text,
-      .feature-card {
-        margin: 0 1rem;
-        width: calc(100% - 2rem);
-      }
-    }
-  </style>
+
+
+        input[type="number"], input[type="text"], select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(78, 255, 182, 0.2);
+        }
+
+
+
+        .btn-primary {
+            background: var(--gradient);
+            color: #121212;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(21, 245, 192, 0.4);
+        }
+
+        .result-card {
+            border-left: 4px solid var(--primary);
+        }
+
+        .glow {
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px rgba(78, 255, 182, 0.5);
+            }
+            to {
+                box-shadow: 0 0 20px rgba(78, 255, 182, 0.8);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+
+        .result-box {
+            border-left: 4px solid var(--primary);
+        }
+
+        .key-concept {
+            background: rgba(78, 255, 182, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+    </style>
 </head>
-<body>
-  <canvas id="matrix"></canvas>
+  <!-- FIN DE ESTILO -->
 
-  <header class="header">
-    <div class="logo">GrimorioTech</div>
-    <nav class="nav-links">
-      <a href="#inicio">Inicio</a>
-      <a href="#servicios">Conjuros</a>
-      <div class="dropdown">
-        <button class="dropdown-btn">Resumen</button>
-        <div class="dropdown-content">
-          <a href="#introduccion">Introducción al Curso</a>
-          <a href="#mapas">Mapas Conceptuales</a>
-          <a href="#tareas">Tareas</a>
-        </div>
+
+
+
+  <!-- INICIO DE CUERPO DEL PROGRAMA -->
+<body>
+
+    <canvas id="matrix"></canvas>
+
+<!--BARRA DE OPCIONES E INICIO ------------------------------------------------------------------------------------------------>
+<div class="container mx-auto px-4 py-8">
+  <!-- Header -->
+  <header class="flex flex-col items-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4 text-center neon-text">
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#4effb6] to-[#15f5c0]">
+        Dashboard Financiero
+      </span>
+    </h1>
+    <p class="text-lg opacity-80 mb-4">
+      Herramientas para entender y dominar el mundo de las finanzas
+    </p>
+    <!-- Navegación en pestañas -->
+    <div class="glass-card p-2 rounded-full">
+      <div class="flex space-x-1">
+        <button onclick="openTab('introduccion')" class="tab-button active px-6 py-2 rounded-full" data-tab="introduccion">
+          <i class="fas fa-info-circle mr-2"></i>
+          Introducción
+        </button>
+        <button onclick="openTab('aplicaciones')" class="tab-button px-6 py-2 rounded-full" data-tab="aplicaciones">
+          <i class="fas fa-calculator mr-2"></i>
+          Aplicaciones
+        </button>
+        <button onclick="openTab('tareas')" class="tab-button px-6 py-2 rounded-full" data-tab="tareas">
+          <i class="fas fa-tasks mr-2"></i>
+          Tareas
+        </button>
+        <button onclick="openTab('diapositivas')" class="tab-button px-6 py-2 rounded-full" data-tab="diapositivas">
+          <i class="fas fa-images mr-2"></i>
+          Diapositivas
+        </button>
       </div>
-      <div class="dropdown">
-        <button class="dropdown-btn">Diapositivas</button>
-        <div class="dropdown-content">
-          <a href="#diapositiva1">Diapositiva 1</a>
-          <a href="#diapositiva2">Diapositiva 2</a>
-          <a href="#diapositiva3">Diapositiva 3</a>
-        </div>
-      </div>
-      <a href="#contacto">Invocar</a>
-    </nav>
+    </div>
   </header>
 
-  <section class="hero" id="inicio">
-    <div class="hero-content">
-      <h1>Bienvenido al Grimorio Digital</h1>
-      <p>Domina los secretos de la tecnología arcana y da vida a tus creaciones digitales</p>
-      <a href="#introduccion" class="cta-button">🌟 Comenzar el Ritual</a>
-    </div>
-  </section>
 
-  <section id="servicios">
-    <h2 class="section-title">Conjuros Digitales</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <img src="https://img.icons8.com/ios-filled/100/4effb6/source-code.png" alt="Desarrollo Web"/>
-        <h3>Páginas Encantadas</h3>
-        <p>Portales dimensionales responsive creados con las últimas tecnologías místicas</p>
-      </div>
-      <div class="feature-card">
-        <img src="https://img.icons8.com/ios-filled/100/4effb6/magic-book.png" alt="Apps Móviles"/>
-        <h3>Aplicaciones Arcanas</h3>
-        <p>Invocación de apps nativas e híbridas con poderosos hechizos funcionales</p>
-      </div>
-      <div class="feature-card">
-        <img src="https://img.icons8.com/ios-filled/100/4effb6/cloud.png" alt="Cloud"/>
-        <h3>Nube Etérea</h3>
-        <p>Almacenamiento en dimensiones paralelas con escalamiento automático</p>
-      </div>
-    </div>
-  </section>
 
-  <section id="introduccion">
-    <div class="content-card">
-      <h2 class="section-title">Introducción al Curso</h2>
-      <p>Sumérgete en un viaje interdimensional donde la tecnología y la magia se fusionan para crear poderosos artefactos digitales.</p>
-    </div>
-  </section>
+        <!-- Tab Content -->
+        <div class="glass-card p-8 mb-8">
 
-  <section id="mapas">
-    <div class="content-card">
-      <h2 class="section-title">Mapas Conceptuales</h2>
-      <p>Explora las conexiones místicas entre diferentes conceptos a través de nuestros mapas de conocimiento interactivos.</p>
-    </div>
-  </section>
+<!-- INTRODUCCIÓN TAB ------------------------------------------------------------------------------------------------>
+            <div id="introduccion" class="tab-content">
+                <h2 class="text-3xl font-bold mb-6 text-[#4effb6]">Introducción al Mundo Financiero</h2>
+                <p class="mb-6 leading-relaxed">El mundo financiero es un ecosistema complejo donde interactúan individuos, empresas y gobiernos a través de instrumentos y mercados que facilitan el flujo de capital. Comprender sus fundamentos es esencial para tomar decisiones informadas sobre inversiones, ahorro y gestión de riesgos.</p>
+                <p class="mb-6 leading-relaxed">El mundo financiero es un ecosistema complejo donde interactúan individuos, empresas y gobiernos a través de instrumentos y mercados que facilitan el flujo de capital. Comprender sus fundamentos es esencial para tomar decisiones informadas sobre inversiones, ahorro y gestión de riesgos.</p>
 
-  <section id="tareas">
-    <div class="content-card">
-      <h2 class="section-title">Tareas Místicas</h2>
-      <p>Demuestra tu dominio de los conjuros digitales completando estos desafíos arcano-tecnológicos.</p>
-    </div>
-  </section>
+                    <div class="glass-card p-6 mt-8 border border-[#4effb6]/30">
+                        <h3 class="text-2xl font-bold mb-4 text-[#15f5c0]">Conceptos Clave</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-start">
+                                <div class="bg-[#4effb6] text-[#121212] rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">Rendimiento</h4>
+                                    <p class="text-sm opacity-80">Ganancia obtenida de una inversión, expresada como porcentaje del capital invertido.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-[#4effb6] text-[#121212] rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">Riesgo</h4>
+                                    <p class="text-sm opacity-80">Posibilidad de que el rendimiento real difiera del esperado, incluyendo pérdida de capital.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-[#4effb6] text-[#121212] rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">Liquidez</h4>
+                                    <p class="text-sm opacity-80">Facilidad con que un activo puede convertirse en efectivo sin afectar su valor.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-[#4effb6] text-[#121212] rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-balance-scale"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">Diversificación</h4>
+                                    <p class="text-sm opacity-80">Estrategia para reducir riesgo distribuyendo inversiones entre diferentes activos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-  <section id="diapositiva1">
-    <h2 class="section-title">Diapositiva 1: Fundamentos Arcanos</h2>
-    <div class="diapo-container">
-      <div class="flip-card">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <img src="https://source.unsplash.com/random/600x800/?tech,code" alt="Fundamentos">
-          </div>
-          <div class="flip-card-back">
-            <h3>Principios Esenciales</h3>
-            <p>Domina las bases de la energía digital y su manipulación cuántica</p>
-          </div>
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-bold mb-4 text-[#15f5c0]">Instrumentos Financieros Básicos</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="glass-card p-6 border border-[#4effb6]/20 hover:border-[#4effb6]/50 transition-all">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-[#4effb6] text-[#121212] rounded-lg w-10 h-10 flex items-center justify-center mr-3">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                    </div>
+                                    <h4 class="font-bold">CETES</h4>
+                                </div>
+                                <p class="text-sm opacity-90">Certificados de la Tesorería de la Federación, instrumentos de deuda gubernamental con plazos desde 28 días hasta 1 año, considerados de bajo riesgo.</p>
+                            </div>
+                            <div class="glass-card p-6 border border-[#4effb6]/20 hover:border-[#4effb6]/50 transition-all">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-[#4effb6] text-[#121212] rounded-lg w-10 h-10 flex items-center justify-center mr-3">
+                                        <i class="fas fa-percentage"></i>
+                                    </div>
+                                    <h4 class="font-bold">Interés Simple</h4>
+                                </div>
+                                <p class="text-sm opacity-90">Cálculo de interés donde los rendimientos se pagan solo sobre el capital inicial, sin reinversión de intereses.</p>
+                            </div>
+                            <div class="glass-card p-6 border border-[#4effb6]/20 hover:border-[#4effb6]/50 transition-all">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-[#4effb6] text-[#121212] rounded-lg w-10 h-10 flex items-center justify-center mr-3">
+                                        <i class="fas fa-chess-board"></i>
+                                    </div>
+                                    <h4 class="font-bold">Interés Compuesto</h4>
+                                </div>
+                                <p class="text-sm opacity-90">Cálculo donde los intereses generados se reinvierten, generando "intereses sobre intereses" y crecimiento exponencial.</p>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+
+
+
+
+
+<!-- Aplicaciones Tab ------------------------------------------------------------------------------------------------>
+            
+            <div id="aplicaciones" class="tab-content hidden">
+                <h2 class="text-3xl font-bold mb-6 text-[#4effb6]">Herramientas Financieras</h2>
+
+                <!-- Simulador de CETES -->
+                    <div class="mb-12">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-[#4effb6] text-[#121212] rounded-lg w-12 h-12 flex items-center justify-center mr-4">
+                                <i class="fas fa-file-invoice-dollar text-xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold">Simulador de CETES</h3>
+                        </div>
+
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="glass-card p-5 rounded-lg">
+
+                            <div class="mb-4">
+                                <label class="block mb-2">Cantidad a invertir ($)</label>
+                                <input type="number" id="ceteInversion" class="w-full" placeholder="Ej. $1000" step="100">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block mb-2">Plazo del CETE (días)</label>
+                                <select id="cetePlazo" class="w-full">
+                                    <option value="28">28 días</option>
+                                    <option value="91">91 días</option>
+                                    <option value="182">182 días</option>
+                                    <option value="365">365 días</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block mb-2">Tasa de descuento (%)</label>
+                                <input type="number" id="ceteTasa" class="w-full" placeholder="Ej. 11.35%" step="0.01">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block mb-2">Inflación (%)</label>
+                                <input type="number" id="inflacionInput" class="w-full" placeholder="Ej. 3.77%" step="100">
+                            </div>
+
+                            <div class="mb-4 flex items-center">
+                                <input type="checkbox" id="ventaAnticipada" class="mr-2">
+                                <label for="ventaAnticipada">Simular venta anticipada</label>
+                            </div>
+
+                            <div id="ventaAnticipadaFields" class="hidden space-y-4">
+                                <div>
+                                    <label class="block mb-2">Plazo transcurrido (días)</label>
+                                    <input type="number" id="plazoTranscurrido" class="w-full" placeholder="Ej. 15">
+                                </div>
+
+                                <div>
+                                    <label class="block mb-2">Tasa de descuento actual (%)</label>
+                                    <input type="number" id="tasaActual" class="w-full" placeholder="Ej. 10.3" step="0.01">
+                                </div>
+                            </div>
+
+                            <button onclick="calcularCetes()" class="w-full py-2 rounded-lg bg-gradient-to-r from-[#4effb6] to-[#15f5c0] text-gray-900 font-bold mt-4">
+                                <i class="fas fa-calculator mr-2"></i>Calcular
+                            </button>
+                        </div>
+
+
+
+
+                        <div id="cetesResults" class="hidden glass-card p-5 rounded-lg">
+                            <h4 class="font-bold text-lg mb-4 text-[#4effb6]">Resultados</h4>
+
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <p class="text-sm opacity-80">Precio de compra</p>
+                                    <p id="precioCompra" class="font-bold">$0.00</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Cantidad comprada</p>
+                                    <p id="cantidadComprada" class="font-bold">0</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Monto invertido</p>
+                                    <p id="montoInvertido" class="font-bold">$0.00</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Remanente</p>
+                                    <p id="remanente" class="font-bold">$0.00</p>
+                                </div>
+                            </div>
+
+                            <div class="result-box p-3 mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span>Interés neto:</span>
+                                    <span id="interesNeto" class="font-bold">$0.00</span>
+                                </div>
+                                <div class="flex justify-between mb-1">
+                                    <span>ISR (5%):</span>
+                                    <span id="isr" class="font-bold">$0.00</span>
+                                </div>
+                                <div class="flex justify-between font-bold text-[#4effb6]">
+                                    <span>Monto neto final:</span>
+                                    <span id="montoNeto" class="font-bold">$0.00</span>
+                                </div>
+                            </div>
+
+                            <h5 class="font-bold mb-2 text-[#4effb6]">Rendimientos</h5>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm opacity-80">Rendimiento anualizado</p>
+                                    <p id="rendAnualizado" class="font-bold">0.00%</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Rendimiento neto anualizado</p>
+                                    <p id="rendNetoAnualizado" class="font-bold">0.00%</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Rendimiento real</p>
+                                    <p id="rendReal" class="font-bold">0.00%</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Inflación considerada</p>
+                                    <p id="inflacion" class="font-bold">0.00%</p>
+                                </div>
+                            </div>
+
+                            <!-- Sección Venta Anticipada (oculta por defecto) -->
+                            <div id="ventaAnticipadaSection" class="hidden">
+                                <h4 id="tituloVentaAnticipada" class="font-bold text-lg mb-4 text-[#4effb6]">Resultados Venta Anticipada</h4>
+                                
+                                <div class="result-box p-3 mb-4">
+                                    <div class="flex justify-between mb-1">
+                                        <span>Interés neto:</span>
+                                        <span id="interesNetoAnticipado" class="font-bold">$0.00</span>
+                                    </div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>ISR (5%):</span>
+                                        <span id="isrAnticipado" class="font-bold">$0.00</span>
+                                    </div>
+                                    <div class="flex justify-between font-bold text-[#4effb6]">
+                                        <span>Monto neto final:</span>
+                                        <span id="montoNetoAnticipado" class="font-bold">$0.00</span>
+                                    </div>
+                                </div>
+
+                                <h5 class="font-bold mb-2 text-[#4effb6]">Rendimientos</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-sm opacity-80">Tasa de descuento actual</p>
+                                        <p id="tasaDescuentoActual" class="font-bold">0.00%</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm opacity-80">Precio de venta anticipada</p>
+                                        <p id="precioVentaAnticipada" class="font-bold">$0.00</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm opacity-80">Rendimiento del Periodo</p>
+                                        <p id="rendimientoPeriodo" class="font-bold">0.00%</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm opacity-80">Rendimiento neto</p>
+                                        <p id="rendNetoPeriodo" class="font-bold">0.00%</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm opacity-80">Rendimiento real</p>
+                                        <p id="rendRealPeriodo" class="font-bold">0.00%</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm opacity-80">Inflación considerada</p>
+                                        <p id="inflacionAnticipada" class="font-bold">0.00%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- FIN DEL CETES RESULT IMPRESION -->
+                    </div>
+                </div>
+
+
+                <!-- Interest Simulator -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-percentage text-[#4effb6] text-xl mr-3"></i>
+                        <h3 class="text-xl font-semibold">Simulador de Intereses</h3>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="glass-card p-5 rounded-lg">
+                            <div class="mb-4">
+                                <label class="block mb-2">Tipo de interés</label>
+                                <select id="tipoInteres" class="w-full p-2 rounded">
+                                    <option value="simple">Interés Simple</option>
+                                    <option value="compuesto">Interés Compuesto</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block mb-2">Capital inicial ($)</label>
+                                <input type="number" id="capital" class="w-full p-2 rounded" step="100">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block mb-2">Tasa de interés anual (%)</label>
+                                <input type="number" id="tasaInteres" class="w-full p-2 rounded" step="0.01">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block mb-2">Plazo (años)</label>
+                                <input type="number" id="plazoInteres" class="w-full p-2 rounded" step="0.5">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block mb-2">Período de capitalización</label>
+                                <select id="periodoCapitalizacion" class="w-full p-2 rounded">
+                                    <option value="1">Anual</option>
+                                    <option value="2">Semestral</option>
+                                    <option value="4">Trimestral</option>
+                                    <option value="12">Mensual</option>
+                                </select>
+                            </div>
+
+                            <button onclick="calcularInteres()" class="w-full py-2 rounded-lg bg-gradient-to-r from-[#4effb6] to-[#15f5c0] text-gray-900 font-bold mt-4">
+                                Calcular
+                            </button>
+                        </div>
+
+                        <div id="interesResults" class="hidden glass-card p-5 rounded-lg">
+                            <h4 class="font-bold text-lg mb-4 text-[#4effb6]">Resultados</h4>
+
+                            <div class="result-box p-3 mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span>Capital final:</span>
+                                    <span id="capitalFinal" class="font-bold">$0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Intereses generados:</span>
+                                    <span id="interesesGenerados" class="font-bold text-[#4effb6]">$0.00</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <p class="font-bold mb-2">Desglose por período</p>
+                                <div class="overflow-auto max-h-60">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="border-b border-[#4effb6]">
+                                                <th class="text-left py-2">Año</th>
+                                                <th class="text-right py-2">Capital</th>
+                                                <th class="text-right py-2">Interés</th>
+                                                <th class="text-right py-2">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="desgloseInteres">
+                                            <!-- Results will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm opacity-80">Tasa efectiva anual</p>
+                                    <p id="tasaEfectiva" class="font-bold">0.00%</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-80">Rendimiento real</p>
+                                    <p id="rendRealInteres" class="font-bold">0.00%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+          <!--FIN DE APLICACIONES--------->
+            </div>
+
+
+
+<!--INICIO DE TAREAS------------------------------------------------------------------------------------------l  -->
+
+
+            <!-- Tareas Tab -->
+            <div id="tareas" class="tab-content hidden">
+                <h2 class="text-3xl font-bold mb-6 text-[#4effb6]">Tareas Financieras</h2>
+
+                <div class="mb-6">
+                    <label class="block mb-2 text-white">Seleccionar tarea:</label>
+                    <select id="selectTarea" onchange="cambiarTarea()"
+                        class="w-full p-2 rounded bg-gray-600 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="all" selected>Mostrar Todas</option>
+                        <option value="1">Tarea 1: Cálculo de CETES</option>
+                        <option value="2">Tarea 2: Interés Simple</option>
+                        <option value="3">Tarea 3: Interés Compuesto</option>
+                    </select>
+                </div>
+
+
+                <!-- Tarea 1 -->
+                <div id="tarea1" class="tarea-content">
+                  <div class="glass-card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-[#4effb6]">Detalle de la Tarea: Cálculo de CETES</h3>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="CETES" class="w-full rounded-lg mb-4">
+                        <p class="text-sm opacity-80 text-center">Instrumentos de deuda gubernamental</p>
+                      </div>
+
+                      <div>
+                        <p class="mb-4">Un inversionista adquiere CETES a 182 días con una tasa de descuento del 8.5%. Considerando que invierte $50,000:</p>
+                        <ol class="list-decimal pl-5 space-y-2 mb-4">
+                          <li>Calcular el precio de compra del CETE</li>
+                          <li>Determinar la cantidad de títulos que puede adquirir</li>
+                          <li>Calcular el monto total invertido y el remanente</li>
+                          <li>Determinar el interés neto al vencimiento</li>
+                          <li>Calcular el ISR (5%) y el monto neto final</li>
+                          <li>Determinar el rendimiento anualizado y el rendimiento real considerando una inflación del 4.5%</li>
+                        </ol>
+                      </div>
+                    </div>
+
+                    <div class="glass-card p-4 bg-[#4effb6]/10 border border-[#4effb6]/30">
+                      <h4 class="font-bold mb-2 text-[#15f5c0]">Solución</h4>
+
+                      <div class="text-sm space-y-2">
+                        <div>
+                          <p><strong>1. Precio de compra:</strong><br>
+                          P = 10 / (1 + (0.085 * 182/360)) = $9.5865</p>
+
+                          <p class="mt-2"><strong>2. Cantidad de títulos:</strong><br>
+                          50,000 / 9.5865 = 5,215.68 → 5,215 títulos</p>
+
+                          <p class="mt-2"><strong>3. Monto invertido:</strong><br>
+                          5,215 * 9.5865 = $49,999.60<br>
+                          Remanente: $0.40</p>
+                        </div>
+
+                        <div>
+                          <p><strong>4. Interés neto:</strong><br>
+                          (5,215 * 10) - 49,999.60 = $5,150.40</p>
+
+                          <p class="mt-2"><strong>5. ISR y monto neto:</strong><br>
+                          ISR: 5,150.40 * 0.05 = $257.52<br>
+                          Neto: 5,150.40 - 257.52 = $4,892.88</p>
+
+                          <p class="mt-2"><strong>6. Rendimientos:</strong><br>
+                          Anualizado: ((52,150 / 49,999.60)^(365/182) - 1) * 100 = 8.5%<br>
+                          Real: (1.085 / 1.045 - 1) * 100 = 3.83%</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tarea 2 -->
+                <div id="tarea2" class="tarea-content">
+                  <div class="glass-card p-6 mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-[#15f5c0]">Detalle de la Tarea: Cálculo de CETES</h3>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="CETES" class="w-full rounded-lg mb-4">
+                        <p class="text-sm opacity-80 text-center">Instrsumentos de deuda gubernamental</p>
+                      </div>
+
+                      <div>
+                        <p class="mb-4">Un inversionista adquiere CETES a 182 días con una tasa de descuento del 8.5%. Considerando que invierte $50,000:</p>
+                        <ol class="list-decimal pl-5 space-y-2 mb-4">
+                          <li>Calcular el precio de compra del CETE</li>
+                          <li>Determinar la cantidad de títulos que puede adquirir</li>
+                          <li>Calcular el monto total invertido y el remanente</li>
+                          <li>Determinar el interés neto al vencimiento</li>
+                          <li>Calcular el ISR (5%) y el monto neto final</li>
+                          <li>Determinar el rendimiento anualizado y el rendimiento real considerando una inflación del 4.5%</li>
+                        </ol>
+                      </div>
+                    </div>
+
+                    <div class="glass-card p-4 bg-[#4effb6]/10 border border-[#4effb6]/30">
+                      <h4 class="font-bold mb-2 text-[#15f5c0]">Solución</h4>
+
+                      <div class="text-sm space-y-2">
+                        <div>
+                          <p><strong>1. Precio de compra:</strong><br>
+                          P = 10 / (1 + (0.085 * 182/360)) = $9.5865</p>
+
+                          <p class="mt-2"><strong>2. Cantidad de títulos:</strong><br>
+                          50,000 / 9.5865 = 5,215.68 → 5,215 títulos</p>
+
+                          <p class="mt-2"><strong>3. Monto invertido:</strong><br>
+                          5,215 * 9.5865 = $49,999.60<br>
+                          Remanente: $0.40</p>
+                        </div>
+
+                        <div>
+                          <p><strong>4. Interés neto:</strong><br>
+                          (5,215 * 10) - 49,999.60 = $5,150.40</p>
+
+                          <p class="mt-2"><strong>5. ISR y monto neto:</strong><br>
+                          ISR: 5,150.40 * 0.05 = $257.52<br>
+                          Neto: 5,150.40 - 257.52 = $4,892.88</p>
+
+                          <p class="mt-2"><strong>6. Rendimientos:</strong><br>
+                          Anualizado: ((52,150 / 49,999.60)^(365/182) - 1) * 100 = 8.5%<br>
+                          Real: (1.085 / 1.045 - 1) * 100 = 3.83%</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            
+
+            <!-- Fin de Tareas -->
+            </div>
+
+<!--INICIO DE DIAPOSITIVAS------------------------------------------------------------------------------------------l  -->
+
+
+            <!-- Diapositivas Tab -->
+            <div id="diapositivas" class="tab-content hidden">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">Diapositivas de Ejemplo</h2>
+
+                <div class="mb-6">
+                    <label class="block mb-2">Seleccionar diapositiva:</label>
+                    <select id="selectDiapositiva" onchange="cambiarDiapositiva()" class="w-full p-2 rounded bg-gray-600 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                        <option value="all" selected>Mostrar Todas</option>
+                        <option value="1">CETES: Instrumentos de Deuda</option>
+                        <option value="2">Interés Simple</option>
+                        <option value="3">Interés Compuesto</option>
+                    </select>
+                </div>
+
+
+                <!-- Diapositiva 1 -->
+                <div id="diapositiva1" class="diapositiva-content">
+                  <!-- Flip Card: se usa la clase h-64 para forzar la altura fija, similar al ejemplo -->
+                  <div class="flip-card w-full h-64 mb-6 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner w-full h-full">
+                      <!-- Cara frontal: Imagen -->
+                      <div class="flip-card-front glass-card bg-gray-800 rounded-lg flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                            alt="Interés Simple" 
+                            class="w-full h-full object-cover rounded-lg">
+                      </div>
+                      <!-- Cara trasera: Texto -->
+                      <div class="flip-card-back glass-card p-4 rounded-lg flex items-center justify-center p-4">
+                        <div>
+                          <h3 class="font-bold neon-text mb-2 text-center text-[#4effb6]">Interés Compuesto</h3>
+                          <p class="text-sm text-center">
+                            "El interés compuesto es la octava maravilla del mundo. Quien lo entiende, lo gana; quien no, lo paga." - Albert Einstein
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Contenido adicional que no debe traslaparse -->
+                  <div class="glass-card p-4 rounded-lg">
+                    <h4 class="font-bold mb-3 text-[#4effb6]">💸 El Poder del Interés Compuesto</h4>
+                    <p class="mb-4">
+                      El interés compuesto es el concepto de que el interés ganado sobre una inversión se reinvierte para generar más interés, creando un efecto de crecimiento exponencial con el tiempo.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 class="font-bold mb-2">Características principales</h5>
+                        <ul class="list-disc pl-5 space-y-1">
+                          <li>A = P × (1 + r/n)<sup>nt</sup></li>
+                          <li>Valor nominal de $10 por título</li>
+                          <li>Liquidación diaria (pueden venderse antes del vencimiento)</li>
+                          <li>Exentos de comisiones en la mayoría de los casos</li>
+                          <li>Sujetos a ISR sobre los intereses generados</li>
+                        </ul>
+                      </div>
+                      <div class="key-concept p-3">
+                        <h5 class="font-bold mb-2">Conceptos clave</h5>
+                        <p><strong>Tasa de descuento:</strong> Diferencia porcentual entre valor nominal y precio de compra.</p>
+                        <p class="mt-2"><strong>Rendimiento anualizado:</strong> Tasa equivalente a un año, útil para comparar con otros instrumentos.</p>
+                        <p class="mt-2"><strong>Precio limpio vs precio sucio:</strong> El precio limpio es el teórico, el sucio incluye intereses acumulados.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+
+            
+            <!-- Fin de Diapositivas -->
+            </div>
+        <!-- Fin de Tabs (Desde Introducción) -->
         </div>
-      </div>
-      <div class="diapo-text">
-        <h3>Introducción a la Tecnomagia</h3>
-        <p>Descubre los fundamentos que conectan el mundo digital con las fuerzas arcanas ancestrales. Aprende a canalizar la energía a través de interfaces místicas y componentes electrónicos.</p>
-      </div>
-    </div>
-  </section>
 
-  <section id="diapositiva2">
-    <h2 class="section-title">Diapositiva 2: Componentes Mágicos</h2>
-    <div class="diapo-container">
-      <div class="flip-card">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <img src="https://source.unsplash.com/random/600x800/?circuit,tech" alt="Componentes">
+
+
+
+        <!-- Derechos-->
+        <footer class="mt-12 text-center text-sm" style="color: var(--text);">
+          <p>© 2025 CuadernoDigital | Matrix Neon Edition</p>
+          <p class="mt-2">Conectando el mundo financiero con tecnología futurista</p>
+          <div class="flex justify-center space-x-4 mt-4">
+            <a href="#" class="footer-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="footer-link"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="footer-link"><i class="fab fa-github"></i></a>
           </div>
-          <div class="flip-card-back">
-            <h3>Elementos Clave</h3>
-            <p>HTML5, CSS3 y JavaScript: Los pilares de la creación digital</p>
-          </div>
-        </div>
-      </div>
-      <div class="diapo-text">
-        <h3>Arquitectura Arcana</h3>
-        <p>Desentraña los misterios de los lenguajes sagrados de la web. Domina la alquimia de estilos y la invocación de funciones místicas para crear hechizos interactivos.</p>
-      </div>
-    </div>
-  </section>
+        </footer>
 
-  <section id="diapositiva3">
-    <h2 class="section-title">Diapositiva 3: Flujos de Energía</h2>
-    <div class="diapo-container">
-      <div class="flip-card">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <img src="https://source.unsplash.com/random/600x800/?data,network" alt="Flujos">
-          </div>
-          <div class="flip-card-back">
-            <h3>Circulación Cuántica</h3>
-            <p>Controla el flujo de datos a través de algoritmos místicos</p>
-          </div>
-        </div>
-      </div>
-      <div class="diapo-text">
-        <h3>Dinámica Energética</h3>
-        <p>Aprende a manipular los flujos de información cuántica mediante arquitecturas limpias y patrones de diseño ancestrales. Domina el arte de la optimización energética.</p>
-      </div>
-    </div>
-  </section>
 
-  <footer id="contacto">
-    <div class="content-card">
-      <h3>Conecta con el Consejo Arcano</h3>
-      <p>📧 Email: oraculo@grimoriotech.com</p>
-      <p>🔮 Teléfono: +1 234 567 890</p>
-      <p>© 2025 GrimorioTech - Protegido por sellos de protección digital</p>
-    </div>
-  </footer>
+<!-- Fin de Card Principal  -->
+<!-- Fin de Card Principal  -->
+<!-- Fin de Card Principal  -->
+</div>
 
-  <script>
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      fontSize = Math.max(14, Math.min(20, window.innerWidth / 100));
-      columns = Math.floor(canvas.width / fontSize);
-      drops = new Array(columns).fill(0).map(() => Math.random() * canvas.height);
-    }
 
-    let fontSize = 16;
-    let columns;
-    let drops = [];
 
-    const matrixChars = "01";
-    
-    function drawMatrix() {
-      ctx.fillStyle = "rgba(18, 18, 18, 0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#4effb6";
-      ctx.font = `${fontSize}px monospace`;
 
-      for (let i = 0; i < columns; i++) {
-        const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
+
+
+
+
+
+<!--INICIO DEL SCRIPT DE JAVA-------------------------------------------------------------------------------------------l  -->
+<!--INICIO DEL SCRIPT DE JAVA-------------------------------------------------------------------------------------------l  -->
+<!--INICIO DEL SCRIPT DE JAVA-------------------------------------------------------------------------------------------l  -->
+<!--INICIO DEL SCRIPT DE JAVA-------------------------------------------------------------------------------------------l  -->
+    <script>
+// Fondo Matrix --------------------------------------------------------------------------
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = '01';
+        const latin = '01';
+        const nums = '01';
+
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
         }
-        drops[i]++;
-      }
-    }
 
-    function animateMatrix() {
-      drawMatrix();
-      requestAnimationFrame(animateMatrix);
-    }
+        const draw = () => {
+            ctx.fillStyle = 'rgba(18, 18, 18, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    resizeCanvas();
-    animateMatrix();
+            ctx.fillStyle = '#4effb6';
+            ctx.font = fontSize + 'px monospace';
 
-    window.addEventListener("resize", () => {
-      resizeCanvas();
-      drawMatrix();
-    });
-  </script>
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+
+        setInterval(draw, 30);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+// Navegación por la pestaña de opciones --------------------------------------------------------------------------
+        function openTab(tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.add('hidden');
+            }
+
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            document.getElementById(tabName).classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        }
+
+
+        // Toggle Venta Anticipada Fields
+        document.getElementById('ventaAnticipada').addEventListener('change', function() {
+            const fields = document.getElementById('ventaAnticipadaFields');
+            if (this.checked) {
+                fields.classList.remove('hidden');
+            } else {
+                fields.classList.add('hidden');
+            }
+        });
+
+// APP DE CETES CALCULADORA --------------------------------------------------------------------------
+
+        function calcularCetes() {
+            const plazo = parseInt(document.getElementById('cetePlazo').value);
+            const tasa = parseFloat(document.getElementById('ceteTasa').value) / 100;
+            const inversion = parseFloat(document.getElementById('ceteInversion').value);
+            const ventaAnticipada = document.getElementById('ventaAnticipada').checked;
+            const inflacion = parseFloat(document.getElementById('inflacionInput').value);
+
+            // Precio de compra
+            const precioCompra = 10 * (1 - (tasa * plazo / 360));
+            const cantidadComprada = Math.floor(inversion / precioCompra);
+            const montoInvertido = cantidadComprada * precioCompra;
+            const remanente = inversion - montoInvertido;
+
+            let interesNeto, isr, montoNeto, rendAnualizado, rendNetoAnualizado, rendReal;
+            let interesNetoAnticipado, isrAnticipado, montoNetoAnticipado, rendNetoPeriodo, rendRealPeriodo;
+            
+            // Cálculo normal al vencimiento
+            interesNeto = cantidadComprada * (10 - precioCompra);
+            isr = interesNeto * 0.05;
+            montoNeto = inversion + interesNeto - isr;
+            rendAnualizado = tasa * 100;
+            rendNetoAnualizado = rendAnualizado - rendAnualizado*0.05;
+            rendReal = rendNetoAnualizado - inflacion;
+
+            // Cálculo venta anticipada   
+            const plazoTranscurrido = parseInt(document.getElementById('plazoTranscurrido').value);
+            const tasaActual = parseFloat(document.getElementById('tasaActual').value) / 100;
+            const plazoRestante = plazo - plazoTranscurrido;
+            const precioVenta = 10 * (1 - (tasaActual * plazoRestante / 360));
+            const rendimientoPeriodo = (((precioVenta - precioCompra)*360) / (precioCompra*plazoTranscurrido))*100;
+
+            interesNetoAnticipado = cantidadComprada * (precioVenta - precioCompra);
+            isrAnticipado = interesNetoAnticipado * 0.05;
+            montoNetoAnticipado = inversion + interesNetoAnticipado - isrAnticipado;
+            rendNetoPeriodo = rendimientoPeriodo - rendimientoPeriodo*0.05;
+            rendRealPeriodo = rendNetoPeriodo - inflacion*(plazoTranscurrido/365);
+
+            // Mostrar siempre resultados normales
+            document.getElementById('precioCompra').textContent = `$${precioCompra.toFixed(4)}`;
+            document.getElementById('cantidadComprada').textContent = cantidadComprada;
+            document.getElementById('montoInvertido').textContent = `$${montoInvertido.toFixed(2)}`;
+            document.getElementById('remanente').textContent = `$${remanente.toFixed(2)}`;
+            document.getElementById('interesNeto').textContent = `$${interesNeto.toFixed(2)}`;
+            document.getElementById('isr').textContent = `$${isr.toFixed(2)}`;
+            document.getElementById('montoNeto').textContent = `$${montoNeto.toFixed(2)}`;
+            document.getElementById('rendAnualizado').textContent = `${rendAnualizado.toFixed(2)}%`;
+            document.getElementById('rendNetoAnualizado').textContent = `${rendNetoAnualizado.toFixed(2)}%`;
+            document.getElementById('rendReal').textContent = `${rendReal.toFixed(2)}%`;
+            document.getElementById('inflacion').textContent = `${inflacion}%`;
+            document.getElementById('inflacionAnticipada').textContent = `${inflacion}%`;
+
+            if (ventaAnticipada) {
+                // Mostrar resultados anticipados
+                document.getElementById('ventaAnticipadaSection').classList.remove('hidden');
+                document.getElementById('tituloVentaAnticipada').textContent = "Resultados de Venta Anticipada";
+                document.getElementById('tasaDescuentoActual').textContent = `${(tasaActual * 100).toFixed(2)}%`;
+                document.getElementById('precioVentaAnticipada').textContent = `$${precioVenta.toFixed(4)}`;
+                document.getElementById('interesNetoAnticipado').textContent = `$${interesNetoAnticipado.toFixed(2)}`;
+                document.getElementById('isrAnticipado').textContent = `$${isrAnticipado.toFixed(2)}`;
+                document.getElementById('montoNetoAnticipado').textContent = `$${montoNetoAnticipado.toFixed(2)}`;
+                document.getElementById('rendimientoPeriodo').textContent = `${rendimientoPeriodo.toFixed(2)}%`;
+                document.getElementById('rendNetoPeriodo').textContent = `${rendNetoPeriodo.toFixed(2)}%`;
+                document.getElementById('rendRealPeriodo').textContent = `${rendRealPeriodo.toFixed(2)}%`;
+            } else {
+                // Ocultar sección anticipada
+                document.getElementById('ventaAnticipadaSection').classList.add('hidden');
+            }
+
+            document.getElementById('cetesResults').classList.remove('hidden');
+        }
+
+
+
+
+
+// APP DE CALCULADORA INTERES  --------------------------------------------------------------------------
+
+        function calcularInteres() {
+            const tipo = document.getElementById('tipoInteres').value;
+            const capital = parseFloat(document.getElementById('capital').value);
+            const tasa = parseFloat(document.getElementById('tasaInteres').value) / 100;
+            const plazo = parseFloat(document.getElementById('plazoInteres').value);
+            const periodos = parseInt(document.getElementById('periodoCapitalizacion').value);
+
+            let capitalFinal, interesesGenerados, tasaEfectiva, desglose = [];
+
+            if (tipo === 'simple') {
+                // Interés simple
+                interesesGenerados = capital * tasa * plazo;
+                capitalFinal = capital + interesesGenerados;
+                tasaEfectiva = tasa * 100;
+
+                // Desglose anual
+                for (let i = 1; i <= plazo; i++) {
+                    const interesAnual = capital * tasa;
+                    desglose.push({
+                        año: i,
+                        capital: capital.toFixed(2),
+                        interes: interesAnual.toFixed(2),
+                        total: (capital + (interesAnual * i)).toFixed(2)
+                    });
+                }
+            } else {
+                // Interés compuesto
+                const tasaPeriodica = tasa / periodos;
+                const totalPeriodos = plazo * periodos;
+
+                capitalFinal = capital * Math.pow(1 + tasaPeriodica, totalPeriodos);
+                interesesGenerados = capitalFinal - capital;
+                tasaEfectiva = (Math.pow(1 + tasaPeriodica, periodos) - 1) * 100;
+
+                // Desglose por período
+                let capitalAcumulado = capital;
+                for (let i = 1; i <= totalPeriodos; i++) {
+                    const interesPeriodo = capitalAcumulado * tasaPeriodica;
+                    capitalAcumulado += interesPeriodo;
+
+                    if (i % periodos === 0 || i === totalPeriodos) {
+                        desglose.push({
+                            año: (i / periodos).toFixed(1),
+                            capital: capital.toFixed(2),
+                            interes: (capitalAcumulado - capital).toFixed(2),
+                            total: capitalAcumulado.toFixed(2)
+                        });
+                    }
+                }
+            }
+
+            // Inflación para rendimiento real
+            const inflacionInput = parseFloat(prompt("Ingrese la tasa de inflación esperada (%):", "4")) || 4;
+            const inflacion = inflacionInput / 100;
+            const rendReal = ((1 + (tasaEfectiva/100)) / (1 + inflacion) - 1) * 100;
+
+            // Mostrar resultados
+            document.getElementById('capitalFinal').textContent = `$${capitalFinal.toFixed(2)}`;
+            document.getElementById('interesesGenerados').textContent = `$${interesesGenerados.toFixed(2)}`;
+            document.getElementById('tasaEfectiva').textContent = `${tasaEfectiva.toFixed(2)}%`;
+            document.getElementById('rendRealInteres').textContent = `${rendReal.toFixed(2)}%`;
+
+            // Generar tabla de desglose
+            const tableBody = document.getElementById('desgloseInteres');
+            tableBody.innerHTML = '';
+
+            desglose.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-[rgba(255,255,255,0.1)]';
+                row.innerHTML = `
+                    <td class="py-2">${item.año}</td>
+                    <td class="text-right py-2">$${item.capital}</td>
+                    <td class="text-right py-2">$${item.interes}</td>
+                    <td class="text-right py-2">$${item.total}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('interesResults').classList.remove('hidden');
+        }
+
+
+
+
+// Navegación por la pestaña de TAREAS--------------------------------------------------------------------------
+
+        function cambiarTarea() {
+            const tareaSeleccionada = document.getElementById('selectTarea').value;
+            const tareas = document.getElementsByClassName('tarea-content');
+
+            // Oculta todas las tareas
+            for (let i = 0; i < tareas.length; i++) {
+                tareas[i].classList.add('hidden');
+            }
+
+            // Si se selecciona "all", mostrar todas las tareas
+            if (tareaSeleccionada === "all") {
+                for (let i = 0; i < tareas.length; i++) {
+                    tareas[i].classList.remove('hidden');
+                }
+            } else {
+                const tarea = document.getElementById(`tarea${tareaSeleccionada}`);
+                if (tarea) {
+                    tarea.classList.remove('hidden');
+                }
+            }
+        }
+
+// Navegación por la pestaña de DIAPOSITIVAS -------------------------------------------------------------------------
+
+        function cambiarDiapositiva() {
+            const diapositivaSeleccionada = document.getElementById('selectDiapositiva').value;
+
+            const diapositivas = document.getElementsByClassName('diapositiva-content');
+
+            // Oculta todas las diapositivas
+            for (let i = 0; i < diapositivas.length; i++) {
+                diapositivas[i].classList.add('hidden');
+            }
+
+            // Si se selecciona "all", mostrar todas
+            if (diapositivaSeleccionada === "all") {
+                for (let i = 0; i < diapositivas.length; i++) {
+                    diapositivas[i].classList.remove('hidden');
+                }
+            } else {
+                const diapositiva = document.getElementById(`diapositiva${diapositivaSeleccionada}`);
+                if (diapositiva) {
+                    diapositiva.classList.remove('hidden');
+                }
+            }
+        }
+
+// FUNCION PARA GIRAR TARJETA DE DIAPOSITVIA--------------------------------------------------------------------------
+        function flipCard(element) {
+            element.classList.toggle('flipped');
+        }
+
+
+    // Fin del SCRIPT
+    </script>
 </body>
 </html>
